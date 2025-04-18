@@ -1,9 +1,9 @@
 from fastapi import Depends
 from sqlmodel import SQLModel, Session, Field, select
-from pydantic import BaseModel
 from typing import Annotated, Union
 
 from .engine import get_db
+from auth.password import hash_pwd
 
 class Users(SQLModel, table=True):
     username : Annotated[str, Field(primary_key=True)]
@@ -11,15 +11,16 @@ class Users(SQLModel, table=True):
     email : Union[str, None]
     password : str
 
-def get_user_data(username: str, db:Annotated[Session,Depends(get_db)]):
+def get_user_data(db:Annotated[Session, Depends(get_db)], username: str) -> Users|None:
     statement = select(Users).where(Users.username == username)
     result = db.exec(statement)
     return result.first()
     
-def create_user(user_data:dict, db:Annotated[Session, Depends(get_db)]):
+def create_user(db:Annotated[Session, Depends(get_db)], user_data:dict):
     user = Users(username=user_data["username"],
                  email=user_data["email"],
-                 password=user_data["password"])
+                 password=hash_pwd(user_data["password"]))
     db.add(user)
     db.commit()
     db.refresh(user)
+

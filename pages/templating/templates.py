@@ -1,5 +1,6 @@
 from fastapi import Request
 from fastapi.templating import Jinja2Templates
+
 from typing import Union
 
 templates = Jinja2Templates(directory="./pages/html")

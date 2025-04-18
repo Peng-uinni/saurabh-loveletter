@@ -1,13 +1,17 @@
-from fastapi import APIRouter, Request, Form, HTTPException, Depends
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Request, Form, HTTPException, Depends, status, Response
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 from pydantic import BaseModel
 from typing import Annotated
+from datetime import timedelta
 
 from pages.templating import templates
 from database.users import get_user_data, create_user, get_db, Users
-from auth.token import oauth2_scheme
+from auth.token import authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user
+from auth.token import create_access_token
+
+from pages.templating import context
 
 router = APIRouter(
     prefix="/users"
@@ -23,40 +27,67 @@ class UserSignUpData(BaseModel):
     email:str
     password:str
 
-#user auth stuff
-def get_current_user(token:Annotated[str, Depends(oauth2_scheme)], db:Annotated[Session, Depends(get_db)]):
-    user = get_user_data(token, db)
-    if user is None:
-        return {"Aaaaa":"aaaa"}
-    return user
-
 #endpoints
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request:Request):
     return templates.get_template(request=request, name="login.html")
 
 @router.post("/login")
-async def login_form(user_data:Annotated[OAuth2PasswordRequestForm, Depends()], db:Annotated[Session, Depends(get_db)]):
-    user = get_user_data(user_data.username, db)
-    if user is None:
-        raise HTTPException(status_code=400, detail="User doesn't exist")
-    if user.password != user_data.password:
-        raise HTTPException(status_code=400, detail="Incorrect Password")
-    #generate token 
-    return {"access_token": user_data.username, "token_type": "bearer"}   
+async def login_form(
+    form_data:Annotated[UserLoginData, Form()],
+    response:Response,
+    db:Annotated[Session, Depends(get_db)]):
+
+    try:
+        response.delete_cookie("access_token")
+    except:
+        pass
+
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:  
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    
+    token = create_access_token({"sub":form_data.username})
+    
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        expires=ACCESS_TOKEN_EXPIRE_MINUTES,
+        path="/",
+        httponly=True
+    )
+    print("made cookie")
+    return "go to somewhere else"
 
 @router.get("/signup")
 async def signup_page(request:Request):
     return templates.get_template(request=request, name="signup.html")
 
-@router.post("/signup")
-async def signup_form(user_data:Annotated[UserSignUpData, Form()], db:Annotated[Session, Depends(get_db)]):
-    user = get_user_data(user_data.username, db)
+@router.post("/signup", response_class=HTMLResponse)
+async def signup_form(
+    form_data:Annotated[UserSignUpData, Form()], 
+    db:Annotated[Session, Depends(get_db)], 
+    request:Request):
+
+    user = get_user_data(db, form_data.username)
     if user is None:
+        create_user(db, form_data.model_dump())
+    else:
         raise HTTPException(status_code=400, detail="Username is already taken")
-    create_user(user_data.model_dump(), db)
-    return 
+    return "<a href='/users/login'>login</a>"
 
 @router.get("/me")
-async def user_me(user:Annotated[Users, Depends(get_current_user)]):
-    return user.model_dump()
+async def user_me(
+    request:Request,
+    user:Annotated[Users, Depends(get_current_user)]
+    ):
+    
+    con = context.UserPageContext(
+        title=f"User|{user.username}",
+        link_field="No links here...",
+        username=str(user.username),
+        name = str(user.name),
+        posts="posts go here lmao lmao lmao"
+    )
+    
+    return templates.get_template(request=request, name="user.html", context=con.model_dump())

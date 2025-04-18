@@ -6,8 +6,16 @@
     <title>{{ title }}</title>
 </head>
 <body>
-    {% block header %}
-    {% endblock %}
+    <header>
+        <div class="logo">
+            logo
+        </div>
+        <div class="links">
+            <ul>
+                {{ links }}
+            </ul>
+        </div>
+    </header>
     {% block body %}
     {% endblock %}
 </body>

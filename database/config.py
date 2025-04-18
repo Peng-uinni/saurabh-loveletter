@@ -1,0 +1,5 @@
+DB_USERNAME="pythonproj"
+DB_PASSWORD="ryan"
+HOST="localhost"
+PORT="5432"
+DATABASE="python_project"

@@ -8,6 +8,7 @@ from datetime import timedelta
 
 from pages.templating import templates
 from database.users import get_user_data, create_user, get_db, Users
+from database.posts import get_user_posts
 from auth.token import authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user
 from auth.token import create_access_token
 
@@ -52,7 +53,7 @@ async def login_form(
     response.set_cookie(
         key="access_token",
         value=token,
-        expires=ACCESS_TOKEN_EXPIRE_MINUTES,
+        expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         path="/",
         httponly=True
     )
@@ -79,15 +80,21 @@ async def signup_form(
 @router.get("/me")
 async def user_me(
     request:Request,
-    user:Annotated[Users, Depends(get_current_user)]
+    user:Annotated[Users, Depends(get_current_user)],
+    db:Annotated[Session, Depends(get_db)]
     ):
+
+    posts = get_user_posts(user.username, db)
     
+
+    print(posts)
+
     con = context.UserPageContext(
         title=f"User|{user.username}",
         link_field="No links here...",
         username=str(user.username),
         name = str(user.name),
-        posts="posts go here lmao lmao lmao"
+        posts=posts
     )
     
     return templates.get_template(request=request, name="user.html", context=con.model_dump())

@@ -1,17 +1,32 @@
 from fastapi import Depends
-from sqlmodel import SQLModel, Session, Field, select
+from sqlmodel import SQLModel, Session, Field, select, func, desc
 from typing import Annotated, Union, Optional
+from datetime import datetime
 
 from .engine import get_db
+from .users import Users
+from auth.token import get_current_user
 
 class Posts(SQLModel, table=True):
     __name__ = "posts"
 
     id:Annotated[Optional[int], Field(default=None, primary_key=True)]
-    username:Annotated[str, Field(primary_key=True, foreign_key="users.username")]
-    parent_post:Annotated[str|None, Field(default=None)]
+    username:Annotated[str, Field(foreign_key="users.username")]
+    parent_post:Annotated[int|None, Field(default=None)]
+    created_at:Annotated[Optional[datetime], Field(sa_column_kwargs={"server_default": func.now()})]
     content:Annotated[str, Field(nullable=False)]
-    likes:int
+    likes:Annotated[int, Field(default=0)] 
 
-def get_user_posts(username:str, db = Annotated[Session, Depends(get_db)]):
-    query = select(Posts).where(username=username)
+
+def create_post(user:Annotated[Users, Depends(get_current_user)], db:Annotated[Session, Depends(get_db)]):
+    pass
+
+def get_user_posts(username:str, db:Annotated[Session, Depends(get_db)]):
+    query = select(Posts).where(Posts.username == username)
+    posts = db.exec(query).all()
+    return posts
+
+def get_posts_by_date(db:Annotated[Session, Depends(get_db)]):
+    query = select(Posts).order_by(desc(Posts.created_at))
+    posts = db.exec(query).all()
+    return posts

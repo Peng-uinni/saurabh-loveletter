@@ -5,7 +5,17 @@
 <h5>{{ username }}</h5>
 
 <div id="posts">
-    {{ posts }}
+    <h3>Posts: </h3>
+    {% if posts %}
+        <ul>
+            {% for post in posts %}
+                <li class="username"><strong>{{ post.username }}</strong>{{ post.content }} </li> 
+            {% endfor %}
+        </ul>
+
+    {% else %}
+        <p>No posts found</p>
+    {% endif %}
 </div>
 
 {% endblock %}

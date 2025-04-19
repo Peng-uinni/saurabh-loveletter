@@ -5,4 +5,4 @@ class UserPageContext(BaseModel):
     link_field:str
     username:str
     name:str
-    posts:str
+    posts:list

@@ -33,7 +33,7 @@ class UserSignUpData(BaseModel):
 async def login_page(request:Request):
     return templates.get_template(request=request, name="login.html")
 
-@router.post("/login")
+@router.post("/login", response_class=HTMLResponse)
 async def login_form(
     form_data:Annotated[UserLoginData, Form()],
     response:Response,
@@ -58,7 +58,7 @@ async def login_form(
         httponly=True
     )
     print("made cookie")
-    return "go to somewhere else"
+    return "<a href='/home'> home </a>"
 
 @router.get("/signup")
 async def signup_page(request:Request):

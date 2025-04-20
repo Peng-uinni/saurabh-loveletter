@@ -67,8 +67,8 @@ async def signup_page(request:Request):
 @router.post("/signup", response_class=HTMLResponse)
 async def signup_form(
     form_data:Annotated[UserSignUpData, Form()], 
-    db:Annotated[Session, Depends(get_db)], 
-    request:Request):
+    db:Annotated[Session, Depends(get_db)]
+    ):
 
     user = get_user_data(db, form_data.username)
     if user is None:
@@ -89,9 +89,9 @@ async def user_me(
 
     print(posts)
 
-    con = context.UserPageContext(
+    con = context.PageContext(
         title=f"User|{user.username}",
-        link_field="No links here...",
+        link_field=["No links here..."],
         username=str(user.username),
         name = str(user.name),
         posts=posts

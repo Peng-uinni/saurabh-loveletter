@@ -18,8 +18,19 @@ class Posts(SQLModel, table=True):
     likes:Annotated[int, Field(default=0)] 
 
 
-def create_post(user:Annotated[Users, Depends(get_current_user)], db:Annotated[Session, Depends(get_db)]):
-    pass
+def create_post(
+        user:Annotated[Users, Depends(get_current_user)], 
+        db:Annotated[Session, Depends(get_db)],
+        content:str
+        ):
+    
+    new_post = Posts(
+        username = user.username,
+        content = content
+    )
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
 
 def get_user_posts(username:str, db:Annotated[Session, Depends(get_db)]):
     query = select(Posts).where(Posts.username == username)

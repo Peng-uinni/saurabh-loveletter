@@ -12,7 +12,11 @@
         </div>
         <div class="links">
             <ul>
-                {{ links }}
+                {% for link in link_field %}
+                    {% if link == "login" or link == "signup" %}
+                    <a href="/users/{{ link }}">{{ link }}</a>
+                    {% endif %}
+                {% endfor %}
             </ul>
         </div>
     </header>

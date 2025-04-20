@@ -43,7 +43,8 @@ def create_access_token(data:dict, expires_delta:Union[timedelta, None] = None):
 
 async def get_current_user(
         access_token: Annotated[str, Cookie()],
-        db:Annotated[Session, Depends(get_db)]):
+        db:Annotated[Session, Depends(get_db)]
+    ):
     
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -65,7 +66,10 @@ async def get_current_user(
         raise credentials_exception
     return user
 
-async def get_current_active_user(
-    current_user: Annotated[Users, Depends(get_current_user)],
+async def user_logged_in(
+        access_token:Annotated[str|None, Cookie()] = None
 ):
-    return current_user
+    if access_token is None:
+        return False
+    else:
+        return True

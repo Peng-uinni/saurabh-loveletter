@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+
+    <form action="/posts/create" method="post" enctype="multipart/form-data">
+        <label for="context">Post enter madi:</label><br>
+        <input type="text" name="content" id="content">
+        <input type="submit">
+    </form>
+
+{% endblock %}

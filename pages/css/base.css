@@ -1,0 +1,22 @@
+body{
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+header{
+    display: grid;
+    grid-template-columns: 10% auto 20%;
+    border-bottom: 1px solid black;
+    padding: 10px;
+    height: 4vh;
+}
+
+header .logo{
+    margin-right: 50%;
+}
+
+header .links{
+    width: fit-content;
+}
+

@@ -6,21 +6,33 @@
     <title>{{ title }}</title>
 </head>
 <body>
+    <link rel="stylesheet" href="{{ url_for('css', path='base.css') }}">
     <header>
         <div class="logo">
             logo
         </div>
+        <div class="search">
+ 
+        </div>
         <div class="links">
-            <ul>
                 {% for link in link_field %}
-                    {% if link == "login" or link == "signup" %}
-                    <a href="/users/{{ link }}">{{ link }}</a>
+                    {% if link == "home-no-login" %}
+                        <a href="/users/login">LogIn</a>
+                        <a href="/users/signup">SignUp</a>
+                    {% elif link == "home-login" %}
+                        <a href="/posts/create">create</a>
+                        <a href="/users/me">me</a>
+                    {% else %}
+                        <a href="/">home</a>
                     {% endif %}
                 {% endfor %}
-            </ul>
         </div>
     </header>
-    {% block body %}
-    {% endblock %}
+
+    <content>
+        {% block body %}
+        {% endblock %}
+    </content>
+
 </body>
 </html>

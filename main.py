@@ -16,7 +16,3 @@ app.mount("/css", StaticFiles(directory="./pages/css"), name="css")
 @app.on_event("startup")
 def startup():
     create_db_and_tables()
-
-@app.get("/")
-async def root():
-    return RedirectResponse(url="/home", status_code=status.HTTP_302_FOUND)

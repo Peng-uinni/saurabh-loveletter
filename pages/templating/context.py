@@ -11,7 +11,7 @@ class PageContext(BaseModel):
 def null_context() -> PageContext:
     context = PageContext(
         title = "null",
-        link_field = ["Nothing here"],
+        link_field = [""],
         username = "",
         name = "",
         posts = []

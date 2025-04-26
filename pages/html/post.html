@@ -1,0 +1,27 @@
+<link rel="stylesheet" href="{{ url_for('css', path='post.css') }}">
+{% for post, user in posts %}
+<div class="post">
+    <div class="name-field">
+        <div class="name">
+            {{ user.name }}
+        </div>
+        <div class="username">
+            @{{ user.username }}
+        </div>
+        <div class="create-date">
+            {{ post.created_at }}
+        </div>
+    </div>
+    <div class="content">
+        {{ post.content }}
+    </div>
+    <div class="interaction">
+        <div class="likes">
+            Likes: {{ post.likes }}
+        </div>
+        <div class="reply">
+            <a href="/posts/reply/{{ post.id }}">reply</a>
+        </div>
+    </div>
+</div>
+{% endfor %}

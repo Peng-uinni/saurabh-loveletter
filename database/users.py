@@ -19,6 +19,7 @@ def get_user_data(db:Annotated[Session, Depends(get_db)], username: str) -> User
 def create_user(db:Annotated[Session, Depends(get_db)], user_data:dict):
     user = Users(username=user_data["username"],
                  email=user_data["email"],
+                 name=user_data["name"],
                  password=hash_pwd(user_data["password"]))
     db.add(user)
     db.commit()

@@ -1,7 +1,8 @@
 from fastapi import Depends
-from sqlmodel import SQLModel, Session, Field, select, func, desc
-from typing import Annotated, Union, Optional
+from sqlmodel import SQLModel, Session, Field, select, func, desc, join
+from typing import Annotated, Optional
 from datetime import datetime
+from pydantic import BaseModel
 
 from .engine import get_db
 from .users import Users
@@ -17,6 +18,12 @@ class Posts(SQLModel, table=True):
     content:Annotated[str, Field(nullable=False)]
     likes:Annotated[int, Field(default=0)] 
 
+class UserPostsJoin(BaseModel):
+    username:str
+    name:str
+    content:str
+    likes:int
+    created_at:datetime
 
 def create_post(
         user:Annotated[Users, Depends(get_current_user)], 
@@ -38,6 +45,7 @@ def get_user_posts(username:str, db:Annotated[Session, Depends(get_db)]):
     return posts
 
 def get_posts_by_date(db:Annotated[Session, Depends(get_db)]):
-    query = select(Posts).order_by(desc(Posts.created_at))
+    query = select(Posts, Users).join(Users, Users.username == Posts.username).order_by(desc(Posts.created_at))
     posts = db.exec(query).all()
+
     return posts

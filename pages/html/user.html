@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block body %}
 
-<h3>{{ name }}</h3>
-<h5>{{ username }}</h5>
+<div class="user-info">
+    <div class="name">
+        {{ name }}
+    </div>
+    <div class="username">
+        {{ username }}
+    </div>
+</div>
 
 <div id="posts">
     <h3>Posts: </h3>

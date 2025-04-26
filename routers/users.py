@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from typing import Annotated
 from datetime import timedelta
 
-from pages.templating import templates
+from pages.templating import templates, context
 from database.users import get_user_data, create_user, get_db, Users
 from database.posts import get_user_posts
 from auth.token import authenticate_user, ACCESS_TOKEN_EXPIRE_MINUTES, get_current_user
@@ -25,18 +25,19 @@ class UserLoginData(BaseModel):
 
 class UserSignUpData(BaseModel):
     username:str
+    name:str
     email:str
     password:str
 
 #endpoints
 @router.get("/login", response_class=HTMLResponse)
 async def login_page(request:Request):
-    return templates.get_template(request=request, name="login.html")
+    con = context.null_context().model_dump()
+    return templates.get_template(request=request, name="login.html", context=con)
 
-@router.post("/login", response_class=HTMLResponse)
+@router.post("/login", response_class=RedirectResponse)
 async def login_form(
     form_data:Annotated[UserLoginData, Form()],
-    response:Response,
     db:Annotated[Session, Depends(get_db)]):
 
     try:
@@ -49,7 +50,8 @@ async def login_form(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     
     token = create_access_token({"sub":form_data.username})
-    
+
+    response = RedirectResponse(url='/users/me', status_code=status.HTTP_303_SEE_OTHER)
     response.set_cookie(
         key="access_token",
         value=token,
@@ -57,12 +59,13 @@ async def login_form(
         path="/",
         httponly=True
     )
-    print("made cookie")
-    return "<a href='/home'> home </a>"
+    
+    return response
 
 @router.get("/signup")
 async def signup_page(request:Request):
-    return templates.get_template(request=request, name="signup.html")
+    con = context.null_context().model_dump()
+    return templates.get_template(request=request, name="signup.html", context=con)
 
 @router.post("/signup", response_class=HTMLResponse)
 async def signup_form(
@@ -75,7 +78,23 @@ async def signup_form(
         create_user(db, form_data.model_dump())
     else:
         raise HTTPException(status_code=400, detail="Username is already taken")
-    return "<a href='/users/login'>login</a>"
+    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+
+@router.get("/set-session/{token}")
+async def set_session(
+    response:Response,
+    token:str
+):
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        path="/",
+        httponly=True
+    )
+
+    return RedirectResponse(url="/users/me", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
 
 @router.get("/me")
 async def user_me(
@@ -85,13 +104,10 @@ async def user_me(
     ):
 
     posts = get_user_posts(user.username, db)
-    
-
-    print(posts)
 
     con = context.PageContext(
         title=f"User|{user.username}",
-        link_field=["No links here..."],
+        link_field=[""],
         username=str(user.username),
         name = str(user.name),
         posts=posts

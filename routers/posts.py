@@ -31,3 +31,10 @@ async def new_post(
 ):
     create_post(user, db, form_data.content)
     return RedirectResponse(url="/", status_code=302)
+
+@router.get("/post/reply/{post_id}")
+async def reply(
+    db:Annotated[Session, Depends(get_db)],
+    post_id:id
+):
+    pass

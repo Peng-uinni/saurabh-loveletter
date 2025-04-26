@@ -1,0 +1,15 @@
+.post{
+    border-bottom: 1px solid gray;
+    padding: 10px;
+}
+
+.post .name-field{
+    display: flex;
+    text-align: center;
+}
+
+.post .name-field .username{
+    margin-left: 5px;
+    margin-right: 5px;
+    color: gray;
+}

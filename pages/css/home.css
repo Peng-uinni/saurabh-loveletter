@@ -1,0 +1,18 @@
+#home-page{
+    display: grid;
+    grid-template-columns: 20% auto;
+}
+
+#home-page .yap{
+    border-right: 1px solid black;
+    height: 100vh;
+    padding: 10px;
+    overflow: hidden;
+}
+
+#home-page .user-yap{
+    padding-left: 10%;
+    padding-right: 30%;
+    padding-top: 10px;
+    overflow: hidden;
+}

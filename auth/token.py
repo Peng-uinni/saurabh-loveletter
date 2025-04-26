@@ -67,9 +67,14 @@ async def get_current_user(
     return user
 
 async def user_logged_in(
-        access_token:Annotated[str|None, Cookie()] = None
+        access_token:Annotated[str, Cookie()]
 ):
-    if access_token is None:
+    try:
+        payload = jwt.decode(access_token, KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if username is None:
+            return False
+    except InvalidTokenError:
         return False
-    else:
-        return True
+    return True
+    

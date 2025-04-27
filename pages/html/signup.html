@@ -1,20 +1,39 @@
 {% extends "base.html" %}
 {% block body %}
-<form action="/users/signup" method="post" enctype="multipart/form-data">
-    <p>
-        <label for="username">username: </label>
-        <input type="text" name="username"> 
-    </p>
-    <p>
-        <label for="email">email :</label>
-        <input type="text" name="email"> 
-    </p>
-    <p>
-        <label for="password">password: </label>
-        <input type="password" name="password">
-    </p>
-    <p>
-        <input type="submit" name="submit" title="Submit">
-    </p>
-</form>
+
+<link rel="stylesheet" href="{{ url_for('css', path='signup.css') }}">
+
+<div class="signup-container">
+    <form class="signup-form" action="/users/signup" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <h3>Signup</h3>
+        </div>
+        
+        <div class="form-group">
+            <label for="username">Username </label>
+            <input type="text" name="username" required> 
+        </div>
+    
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" name="name" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="text" name="email" required> 
+        </div>
+    
+        <div class="form-group">
+            <label for="password">Password </label>
+            <input type="password" name="password" required>
+        </div>
+
+        <div class="login-link">
+            <a href="/users/login">Have an account? Login</a>
+        </div>
+    
+        <button class="signup-button" type="submit">Signup</button>
+    </form>
+</div>
 {% endblock %}

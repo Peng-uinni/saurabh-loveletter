@@ -6,6 +6,7 @@ class PageContext(BaseModel):
     username:str
     name:str
     posts:list
+    logged_in:bool
 
 
 def null_context() -> PageContext:
@@ -14,7 +15,8 @@ def null_context() -> PageContext:
         link_field = [""],
         username = "",
         name = "",
-        posts = []
+        posts = [],
+        logged_in = False
     )
 
     return context

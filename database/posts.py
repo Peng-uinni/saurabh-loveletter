@@ -40,7 +40,7 @@ def create_post(
     db.refresh(new_post)
 
 def get_user_posts(username:str, db:Annotated[Session, Depends(get_db)]):
-    query = select(Posts).where(Posts.username == username)
+    query = select(Posts).query = select(Posts, Users).join(Users, Users.username == Posts.username).where(Posts.username == username)
     posts = db.exec(query).all()
     return posts
 

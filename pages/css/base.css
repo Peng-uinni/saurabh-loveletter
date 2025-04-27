@@ -1,7 +1,11 @@
 body{
     font-size: 20px;
+    font-family: sans-serif;
     padding: 0;
     margin: 0;
+    min-height: 100vh;
+    overflow: hidden;
+    direction: ltr;
 }
 
 header{
@@ -20,3 +24,19 @@ header .links{
     width: fit-content;
 }
 
+a{
+    text-decoration: none;
+}
+
+a:visited{
+    color: inherit;
+}
+
+a:hover{
+    text-decoration: underline;
+    color: rgb(114, 114, 114);
+}
+
+::-webkit-scrollbar{
+    visibility: hidden;
+}

@@ -55,7 +55,7 @@ async def login_form(
     response.set_cookie(
         key="access_token",
         value=token,
-        expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        expires=ACCESS_TOKEN_EXPIRE_MINUTES * 6000,
         path="/",
         httponly=True
     )
@@ -67,7 +67,7 @@ async def signup_page(request:Request):
     con = context.null_context().model_dump()
     return templates.get_template(request=request, name="signup.html", context=con)
 
-@router.post("/signup", response_class=HTMLResponse)
+@router.post("/signup", response_class=RedirectResponse)
 async def signup_form(
     form_data:Annotated[UserSignUpData, Form()], 
     db:Annotated[Session, Depends(get_db)]
@@ -80,22 +80,6 @@ async def signup_form(
         raise HTTPException(status_code=400, detail="Username is already taken")
     return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
 
-@router.get("/set-session/{token}")
-async def set_session(
-    response:Response,
-    token:str
-):
-    response.set_cookie(
-        key="access_token",
-        value=token,
-        expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        path="/",
-        httponly=True
-    )
-
-    return RedirectResponse(url="/users/me", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
-
-
 @router.get("/me")
 async def user_me(
     request:Request,
@@ -106,11 +90,12 @@ async def user_me(
     posts = get_user_posts(user.username, db)
 
     con = context.PageContext(
-        title=f"User|{user.username}",
+        title=f"{user.username}",
         link_field=[""],
         username=str(user.username),
         name = str(user.name),
-        posts=posts
+        posts=posts,
+        logged_in=True
     )
     
     return templates.get_template(request=request, name="user.html", context=con.model_dump())

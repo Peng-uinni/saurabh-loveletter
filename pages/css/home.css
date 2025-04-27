@@ -1,18 +1,20 @@
 #home-page{
     display: grid;
-    grid-template-columns: 20% auto;
+    grid-template-columns: 20% auto 20%;
 }
 
 #home-page .yap{
     border-right: 1px solid black;
-    height: 100vh;
     padding: 10px;
-    overflow: hidden;
 }
 
 #home-page .user-yap{
-    padding-left: 10%;
-    padding-right: 30%;
-    padding-top: 10px;
-    overflow: hidden;
+    overflow: scroll;
+    max-height: 94vh;
+    padding: 10px 20%;
+}
+
+#home-page .create-post{
+    border-left: 1px solid black;
+    padding: 10px;
 }

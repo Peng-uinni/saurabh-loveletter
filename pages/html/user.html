@@ -1,27 +1,29 @@
 {% extends "base.html" %}
 {% block body %}
 
-<div class="user-info">
-    <div class="name">
-        {{ name }}
-    </div>
-    <div class="username">
-        {{ username }}
-    </div>
-</div>
+<link rel="stylesheet" href="{{ url_for('css', path='user.css') }}">
 
-<div id="posts">
-    <h3>Posts: </h3>
-    {% if posts %}
-        <ul>
-            {% for post in posts %}
-                <li class="username"><strong>{{ post.username }}</strong>{{ post.content }} </li> 
-            {% endfor %}
-        </ul>
+<div class="user-page">
 
-    {% else %}
-        <p>No posts found</p>
-    {% endif %}
+    <div class="user-info">
+        <img class="profile-pic" src="{{ url_for('img', path='default-user-image.jpg') }}">
+        <div class="name-field">
+            <div class="name">
+                {{ name }}
+            </div>
+            <div class="username">
+                {{ username }}
+            </div>
+        </div>
+    </div>
+    
+    <div id="posts">
+        {% if posts %}
+            {% include "post.html" %}
+        {% else %}
+            <p>No posts found</p>
+        {% endif %}
+    </div>
 </div>
 
 {% endblock %}

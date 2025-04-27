@@ -18,6 +18,14 @@
             No one posted anything :(
         {% endif %}
     </div>
+
+    {% if logged_in %}
+    <div class="create-post">
+        Post something...anything!
+        {% include "create_post.html" %}
+    </div>
+    {% endif %}
+
 </div>
 
 {% endblock %}

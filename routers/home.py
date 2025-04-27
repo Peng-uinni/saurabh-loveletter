@@ -24,9 +24,11 @@ async def home(
 
     con = context.null_context()
     con.posts = _posts
-    con.title = "Home"   
+    con.title = "Home"  
+    
     if logged_in:
         con.link_field = ["home-login"]
+        con.logged_in = True 
     else:
         con.link_field = ["home-no-login"]
 

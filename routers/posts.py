@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from pydantic import BaseModel
 from typing import Annotated
 
@@ -35,6 +35,6 @@ async def new_post(
 @router.get("/post/reply/{post_id}")
 async def reply(
     db:Annotated[Session, Depends(get_db)],
-    post_id:id
+    post_id:int
 ):
-    pass
+    return {"message":"not implemented"}
